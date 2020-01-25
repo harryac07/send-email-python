@@ -6,15 +6,14 @@ client = boto3.client('sesv2')
 
 
 def handler(event, context):
-    if not 'receiver' in event:
-        event['receiver'] = 'test@test.com'
-    SENDER_EMAIl = os.environ.get('SENDER_EMAIL') or 'test@test.com'
+    receiver = (json.loads(event['body'])).get('receiver') or 'test@test.com'
+    sender = os.environ.get('SENDER_EMAIL') or 'test@test.com'
 
     client.send_email(
-        FromEmailAddress=SENDER_EMAIl,
+        FromEmailAddress=sender,
         Destination={
             'ToAddresses': [
-                event['receiver'],
+                receiver,
             ]
         },
         Content={
