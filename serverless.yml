@@ -14,6 +14,7 @@ package:
 custom:
   environment:
     ACCOUND_ID: ${file(./env.yml):${self:provider.stage}.ACCOUND_ID}
+    SENDER_EMAIL: ${file(./env.yml):${self:provider.stage}.SENDER_EMAIL}
 
 functions:
   helloWorld:
@@ -26,6 +27,7 @@ functions:
         - functions/helloWorld/utils/**
     environment:
       ACCOUND_ID: ${self:custom.environment.ACCOUND_ID}
+      SENDER_EMAIL: ${self:custom.environment.SENDER_EMAIL}
 
   sendEmailApiEndpoint:
     handler: functions/sendEmailApiEndpoint/index.handler
@@ -35,8 +37,15 @@ functions:
       include: 
         - functions/sendEmailApiEndpoint/index.py  
         - functions/sendEmailApiEndpoint/utils/**
+    events:
+      - http:
+          path: send-email
+          method: post
+          cors:
+            origins: true
     environment:
       ACCOUND_ID: ${self:custom.environment.ACCOUND_ID}
+      SENDER_EMAIL: ${self:custom.environment.SENDER_EMAIL}
 
 plugins:
   - serverless-python-requirements
