@@ -1,0 +1,42 @@
+
+service: serverless-project-py
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+
+package:
+  individually: true
+  exclude:
+    - ./** 
+custom:
+  environment:
+    ACCOUND_ID: ${file(./env.yml):${self:provider.stage}.ACCOUND_ID}
+
+functions:
+  helloWorld:
+    handler: functions/helloWorld/index.handler
+    timeout: 60 # 1 min
+    memorySize: 128
+    package:
+      include: 
+        - functions/helloWorld/index.py  
+        - functions/helloWorld/utils/**
+    environment:
+      ACCOUND_ID: ${self:custom.environment.ACCOUND_ID}
+
+  sendEmailApiEndpoint:
+    handler: functions/sendEmailApiEndpoint/index.handler
+    timeout: 60 # 1 min
+    memorySize: 128
+    package:
+      include: 
+        - functions/sendEmailApiEndpoint/index.py  
+        - functions/sendEmailApiEndpoint/utils/**
+    environment:
+      ACCOUND_ID: ${self:custom.environment.ACCOUND_ID}
+
+plugins:
+  - serverless-python-requirements
